@@ -1,0 +1,35 @@
+FRESHCHAIN DATASET SUMMARY
+======================================================================
+
+Shape
+(10995, 6)
+
+Columns
+Fruit
+Temp
+Humid (%)
+Light (Fux)
+CO2 (pmm)
+Class
+
+
+Data Types
+Fruit              str
+Temp             int64
+Humid (%)        int64
+Light (Fux)    float64
+CO2 (pmm)        int64
+Class              str
+dtype: object
+
+Missing Values
+Fruit          0
+Temp           0
+Humid (%)      0
+Light (Fux)    0
+CO2 (pmm)      0
+Class          0
+dtype: int64
+
+Duplicate Records
+2880

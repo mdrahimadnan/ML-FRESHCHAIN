@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}About FreshChain - Cold Chain Spoilage AI{% endblock %}
+
+{% block content %}
+<div class="hero-header">
+    <div class="hero-tag">
+        <span>🌐 Mission & Architecture</span>
+    </div>
+    <h1 class="hero-title">About FreshChain</h1>
+    <p class="hero-subtitle">Preserving agricultural value and preventing supply-chain food waste through predictive IoT intelligence.</p>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2rem;">
+    <div class="card">
+        <h2 class="card-title">🍃 The Cold Chain Challenge</h2>
+        <p style="color: #d1d5db; margin-top: 0.75rem; line-height: 1.8;">
+            Post-harvest loss in fruits and perishables exceeds 30% globally due to temperature abuse, inadequate humidity regulation, and poor ventilation during transport. FreshChain combines multi-spectral IoT sensor telemetry (Temperature, Humidity, Light Exposure, and CO₂ gas emissions) with trained machine learning models to detect spoilage onset before visible degradation appears.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2 class="card-title">⚙️ Machine Learning Pipeline</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 1.25rem;">
+            <div style="background: var(--surface-card); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--surface-border);">
+                <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 0.5rem;">1. Data Ingestion (M1-M3)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Cleaning 10,900+ raw sensor entries, eliminating duplicates, LabelEncoding fruit species, and standardizing features with StandardScaler.
+                </p>
+            </div>
+            <div style="background: var(--surface-card); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--surface-border);">
+                <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 0.5rem;">2. Benchmark Models (M4-M9)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Training Logistic Regression, Decision Trees, Random Forests, Naive Bayes, K-Nearest Neighbors, and Support Vector Machines.
+                </p>
+            </div>
+            <div style="background: var(--surface-card); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--surface-border);">
+                <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 0.5rem;">3. Ensembles & Tuning (M10-M12)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Ensemble Hard/Soft voting, stacking classifiers, and hyperparameter tuning leading to our 99.88% accuracy production deployment.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}FreshChain - Dataset & Telemetry Explorer{% endblock %}
+
+{% block content %}
+<div class="hero-header">
+    <div class="hero-tag">
+        <span>📊 Data Engineering & EDA (Modules M1-M3)</span>
+    </div>
+    <h1 class="hero-title">Cold Storage Dataset Explorer</h1>
+    <p class="hero-subtitle">Multi-parameter sensor observations capturing fruit degradation under controlled cold chain environments.</p>
+</div>
+
+<!-- Dataset Stats Summary -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total_records }}</div>
+        <div class="stat-label">Total Sensor Readings</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">4</div>
+        <div class="stat-label">Tracked Fruits (Banana, Orange, Pineapple, Tomato)</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.avg_temp }} °C</div>
+        <div class="stat-label">Average Temperature</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.avg_humidity }} %</div>
+        <div class="stat-label">Average Relative Humidity</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.avg_co2 }} ppm</div>
+        <div class="stat-label">Average Ambient CO₂</div>
+    </div>
+</div>
+
+<!-- Filter controls -->
+<div class="card" style="margin-bottom: 2rem;">
+    <form method="GET" action="/dataset" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 180px;">
+            <label class="form-label" style="margin-bottom: 0.35rem;">Filter by Fruit</label>
+            <select name="fruit" class="form-select">
+                <option value="">All Fruits</option>
+                {% for f in stats.fruits %}
+                <option value="{{ f }}" {% if selected_fruit == f %}selected{% endif %}>{{ f }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="flex: 1; min-width: 180px;">
+            <label class="form-label" style="margin-bottom: 0.35rem;">Filter by Spoilage Status</label>
+            <select name="status" class="form-select">
+                <option value="">All Statuses</option>
+                {% for c in stats.classes %}
+                <option value="{{ c }}" {% if selected_status == c %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="btn-primary" style="margin-top: 0; padding: 0.75rem 1.5rem;">Apply Filter</button>
+        </div>
+        {% if selected_fruit or selected_status %}
+        <div>
+            <a href="/dataset" class="btn-preset" style="display: inline-block; padding: 0.75rem 1rem; text-decoration: none;">Clear Filter</a>
+        </div>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Records Table -->
+<div class="card" style="margin-bottom: 2.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 class="card-title" style="margin-bottom: 0;">Telemetry Sample Records</h2>
+        <span style="color: var(--text-muted); font-size: 0.85rem;">Showing {{ samples|length }} of {{ filtered_count }} matching entries</span>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Fruit</th>
+                    <th>Temp (°C)</th>
+                    <th>Humidity (%)</th>
+                    <th>Light (Lux)</th>
+                    <th>CO₂ (ppm)</th>
+                    <th>Actual Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in samples %}
+                <tr>
+                    <td><strong>{{ row['Fruit'] }}</strong></td>
+                    <td>{{ row['Temp'] }}</td>
+                    <td>{{ row['Humid (%)'] }}</td>
+                    <td>{{ "%.2f"|format(row['Light (Fux)']) }}</td>
+                    <td>{{ row['CO2 (pmm)'] }}</td>
+                    <td>
+                        {% if row['Class'] == 'Good' %}
+                        <span class="status-badge badge-success">GOOD (FRESH)</span>
+                        {% else %}
+                        <span class="status-badge badge-danger">{{ row['Class'] }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- EDA Visualizations Gallery -->
+<div class="card">
+    <h2 class="card-title">
+        <span>📈</span>
+        <span>Exploratory Data Analysis (EDA) Insights</span>
+    </h2>
+    <p class="card-desc">Visualizations generated during the data pipeline analysis (Module M2 EDA).</p>
+
+    <div class="gallery-grid">
+        <div class="plot-card">
+            <img src="{{ url_for('static', filename='images/Correlation_Heatmap.png') }}" alt="Correlation Heatmap">
+            <div class="plot-title">Feature Correlation Matrix</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Correlations between Temperature, Humidity, Light and Gas emissions.</p>
+        </div>
+        <div class="plot-card">
+            <img src="{{ url_for('static', filename='images/Temp_Histogram.png') }}" alt="Temperature Distribution">
+            <div class="plot-title">Cold Storage Temperature Distribution</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Operating range across experimental cold storage runs.</p>
+        </div>
+        <div class="plot-card">
+            <img src="{{ url_for('static', filename='images/CO2 (pmm)_Histogram.png') }}" alt="CO2 Histogram">
+            <div class="plot-title">CO₂ Respiration Buildup Distribution</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Elevated CO₂ indicates high respiration and decay rate.</p>
+        </div>
+        <div class="plot-card">
+            <img src="{{ url_for('static', filename='images/Humid (%)_Boxplot.png') }}" alt="Humidity Boxplot">
+            <div class="plot-title">Relative Humidity Boxplot</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Quartiles and variance for moisture in transit.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

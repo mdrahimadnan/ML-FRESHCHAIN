@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}FreshChain - Spoilage Detection & Freshness Intelligence{% endblock %}
+
+{% block content %}
+<div class="hero-header">
+    <div class="hero-tag">
+        <span>✨ Powered by Random Forest Classifier</span>
+        <span style="background: rgba(16, 185, 129, 0.3); padding: 0.1rem 0.5rem; border-radius: 9999px;">99.88% Accuracy</span>
+    </div>
+    <h1 class="hero-title">Predict Fruit Freshness & Spoilage</h1>
+    <p class="hero-subtitle">Simulate real-time IoT cold storage sensors to predict fruit quality, prevent supply chain wastage, and assess shelf life deterioration.</p>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Left Column: Input Form -->
+    <div class="card">
+        <h2 class="card-title">
+            <span>📡</span>
+            <span>IoT Sensor Telemetry</span>
+        </h2>
+        <p class="card-desc">Configure the environmental metrics tracked inside the cold room or shipping container.</p>
+
+        <form id="prediction-form">
+            <!-- Fruit Selection -->
+            <div class="form-group">
+                <label class="form-label" for="fruit">
+                    <span>Target Fruit Type</span>
+                    <span id="fruit-emoji" style="font-size: 1.15rem;">🍌</span>
+                </label>
+                <select id="fruit" name="fruit" class="form-select">
+                    <option value="Banana" selected>Banana (Musa acuminata)</option>
+                    <option value="Orange">Orange (Citrus sinensis)</option>
+                    <option value="Pineapple">Pineapple (Ananas comosus)</option>
+                    <option value="Tomato">Tomato (Solanum lycopersicum)</option>
+                </select>
+            </div>
+
+            <!-- Temperature -->
+            <div class="form-group">
+                <div class="form-label">
+                    <span>Temperature (°C)</span>
+                    <span id="temp-display" class="slider-val">22.0 °C</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" id="temp" name="temp" min="15.0" max="35.0" step="0.5" value="22.0" class="slider">
+                </div>
+            </div>
+
+            <!-- Humidity -->
+            <div class="form-group">
+                <div class="form-label">
+                    <span>Relative Humidity (%)</span>
+                    <span id="humidity-display" class="slider-val">90.0 %</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" id="humidity" name="humidity" min="50.0" max="100.0" step="1.0" value="90.0" class="slider">
+                </div>
+            </div>
+
+            <!-- Light Intensity -->
+            <div class="form-group">
+                <div class="form-label">
+                    <span>Light Exposure (Lux / Fux)</span>
+                    <span id="light-display" class="slider-val">12.0 Lux</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" id="light" name="light" min="0.0" max="250.0" step="1.0" value="12.0" class="slider">
+                </div>
+            </div>
+
+            <!-- CO2 Concentration -->
+            <div class="form-group">
+                <div class="form-label">
+                    <span>CO₂ Concentration (ppm)</span>
+                    <span id="co2-display" class="slider-val">320 ppm</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" id="co2" name="co2" min="100" max="600" step="5" value="320" class="slider">
+                </div>
+            </div>
+
+            <!-- Preset Scenarios -->
+            <div class="presets-group">
+                <span class="presets-label">⚡ Quick Sensor Presets</span>
+                <div class="preset-buttons">
+                    <button type="button" class="btn-preset" onclick="setPreset('Banana', 22.0, 92.0, 8.0, 310)">🍌 Optimal Banana</button>
+                    <button type="button" class="btn-preset" onclick="setPreset('Orange', 26.5, 95.0, 85.0, 420)">🍊 Warm Spoilage Orange</button>
+                    <button type="button" class="btn-preset" onclick="setPreset('Pineapple', 25.0, 95.0, 15.0, 360)">🍍 At-Risk Pineapple</button>
+                    <button type="button" class="btn-preset" onclick="setPreset('Tomato', 21.5, 88.0, 10.0, 280)">🍅 Prime Fresh Tomato</button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="btn-submit">
+                <span>⚡ Run AI Spoilage Diagnostic</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Right Column: Prediction Output -->
+    <div class="card result-card">
+        <div>
+            <h2 class="card-title">
+                <span>📊</span>
+                <span>Diagnostic Assessment</span>
+            </h2>
+            <p class="card-desc">Machine learning classification result based on environmental parameters.</p>
+
+            <div class="status-badge-container" id="status-container">
+                <div class="status-indicator-ring" id="status-ring">
+                    <span id="status-icon">🍃</span>
+                </div>
+                <h3 class="status-title" id="status-title">Fresh & Prime Quality</h3>
+                <span class="status-badge badge-success" id="status-badge">OPTIMAL BATCH</span>
+            </div>
+
+            <!-- Probabilities -->
+            <div class="prob-list">
+                <div class="prob-row">
+                    <div class="prob-header">
+                        <span>Fresh Quality Probability</span>
+                        <strong id="prob-fresh-val">82%</strong>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill progress-fresh" id="prob-fresh-bar" style="width: 82%;"></div>
+                    </div>
+                </div>
+
+                <div class="prob-row">
+                    <div class="prob-header">
+                        <span>Degradation / At Risk Probability</span>
+                        <strong id="prob-risk-val">10%</strong>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill progress-risk" id="prob-risk-bar" style="width: 10%;"></div>
+                    </div>
+                </div>
+
+                <div class="prob-row">
+                    <div class="prob-header">
+                        <span>Severe Spoilage Probability</span>
+                        <strong id="prob-spoil-val">8%</strong>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill progress-spoil" id="prob-spoil-bar" style="width: 8%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="recommendation-box" id="rec-box">
+            <span style="font-size: 1.25rem;">💡</span>
+            <div id="recommendation-text">
+                Optimal storage conditions maintained. Produce is fresh and ready for market or cold chain transfer.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const fruitEmojis = {
+        'Banana': '🍌',
+        'Orange': '🍊',
+        'Pineapple': '🍍',
+        'Tomato': '🍅'
+    };
+
+    // Sliders sync
+    const tempInput = document.getElementById('temp');
+    const tempDisplay = document.getElementById('temp-display');
+    tempInput.addEventListener('input', () => { tempDisplay.innerText = parseFloat(tempInput.value).toFixed(1) + ' °C'; });
+
+    const humInput = document.getElementById('humidity');
+    const humDisplay = document.getElementById('humidity-display');
+    humInput.addEventListener('input', () => { humDisplay.innerText = parseFloat(humInput.value).toFixed(1) + ' %'; });
+
+    const lightInput = document.getElementById('light');
+    const lightDisplay = document.getElementById('light-display');
+    lightInput.addEventListener('input', () => { lightDisplay.innerText = parseFloat(lightInput.value).toFixed(1) + ' Lux'; });
+
+    const co2Input = document.getElementById('co2');
+    const co2Display = document.getElementById('co2-display');
+    co2Input.addEventListener('input', () => { co2Display.innerText = parseInt(co2Input.value) + ' ppm'; });
+
+    const fruitSelect = document.getElementById('fruit');
+    fruitSelect.addEventListener('change', () => {
+        document.getElementById('fruit-emoji').innerText = fruitEmojis[fruitSelect.value] || '🍎';
+    });
+
+    function setPreset(fruit, temp, hum, light, co2) {
+        fruitSelect.value = fruit;
+        document.getElementById('fruit-emoji').innerText = fruitEmojis[fruit] || '🍎';
+
+        tempInput.value = temp;
+        tempDisplay.innerText = temp.toFixed(1) + ' °C';
+
+        humInput.value = hum;
+        humDisplay.innerText = hum.toFixed(1) + ' %';
+
+        lightInput.value = light;
+        lightDisplay.innerText = light.toFixed(1) + ' Lux';
+
+        co2Input.value = co2;
+        co2Display.innerText = co2 + ' ppm';
+
+        executePrediction();
+    }
+
+    async function executePrediction() {
+        const payload = {
+            fruit: fruitSelect.value,
+            temp: parseFloat(tempInput.value),
+            humidity: parseFloat(humInput.value),
+            light: parseFloat(lightInput.value),
+            co2: parseFloat(co2Input.value)
+        };
+
+        const submitBtn = document.getElementById('btn-submit');
+        submitBtn.innerHTML = '<span>⏳ Analyzing telemetry...</span>';
+
+        try {
+            const resp = await fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await resp.json();
+
+            if (data.success) {
+                updateUI(data);
+            } else {
+                alert('Prediction failed: ' + data.error);
+            }
+        } catch (err) {
+            console.error('Network error:', err);
+        } finally {
+            submitBtn.innerHTML = '<span>⚡ Run AI Spoilage Diagnostic</span>';
+        }
+    }
+
+    function updateUI(res) {
+        const ring = document.getElementById('status-ring');
+        const icon = document.getElementById('status-icon');
+        const title = document.getElementById('status-title');
+        const badge = document.getElementById('status-badge');
+        const recText = document.getElementById('recommendation-text');
+
+        title.innerText = res.label;
+        badge.className = 'status-badge ' + res.badge;
+        badge.innerText = res.status.toUpperCase();
+        recText.innerText = res.recommendation;
+
+        if (res.prediction === 2) { // Fresh
+            ring.style.borderColor = '#10b981';
+            ring.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.4)';
+            ring.style.background = 'rgba(16, 185, 129, 0.12)';
+            icon.innerText = '🍃';
+        } else if (res.prediction === 1) { // At risk
+            ring.style.borderColor = '#f59e0b';
+            ring.style.boxShadow = '0 0 30px rgba(245, 158, 11, 0.4)';
+            ring.style.background = 'rgba(245, 158, 11, 0.12)';
+            icon.innerText = '⚠️';
+        } else { // Spoiled
+            ring.style.borderColor = '#ef4444';
+            ring.style.boxShadow = '0 0 30px rgba(239, 68, 68, 0.4)';
+            ring.style.background = 'rgba(239, 68, 68, 0.12)';
+            icon.innerText = '☣️';
+        }
+
+        // Progress bars
+        document.getElementById('prob-fresh-val').innerText = res.probabilities.fresh + '%';
+        document.getElementById('prob-fresh-bar').style.width = res.probabilities.fresh + '%';
+
+        document.getElementById('prob-risk-val').innerText = res.probabilities.at_risk + '%';
+        document.getElementById('prob-risk-bar').style.width = res.probabilities.at_risk + '%';
+
+        document.getElementById('prob-spoil-val').innerText = res.probabilities.critical + '%';
+        document.getElementById('prob-spoil-bar').style.width = res.probabilities.critical + '%';
+    }
+
+    document.getElementById('prediction-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        executePrediction();
+    });
+
+    // Auto-predict on load
+    window.addEventListener('DOMContentLoaded', () => {
+        executePrediction();
+    });
+</script>
+{% endblock %}

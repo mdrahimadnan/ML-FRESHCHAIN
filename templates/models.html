@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}FreshChain - Machine Learning Architecture & Analytics{% endblock %}
+
+{% block content %}
+<div class="hero-header">
+    <div class="hero-tag">
+        <span>🤖 Benchmark of 8 Machine Learning Models (Modules M4 - M11)</span>
+    </div>
+    <h1 class="hero-title">Model Performance & Evaluation</h1>
+    <p class="hero-subtitle">Comparative evaluation across tree-based, linear, distance-based, kernel, and ensemble algorithms.</p>
+</div>
+
+<!-- Model comparison table -->
+<div class="card" style="margin-bottom: 2.5rem;">
+    <h2 class="card-title">
+        <span>🏆</span>
+        <span>Algorithm Benchmark Leaderboard</span>
+    </h2>
+    <p class="card-desc">Evaluated on stratified test split with StandardScaler normalization.</p>
+
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Model Architecture</th>
+                    <th>Accuracy</th>
+                    <th>Precision</th>
+                    <th>Recall</th>
+                    <th>F1 Score</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in models %}
+                <tr {% if 'Active' in m.status %}style="background: rgba(16, 185, 129, 0.08); font-weight: 600;"{% endif %}>
+                    <td>
+                        {{ m.name }}
+                        {% if 'Active' in m.status %}
+                        <span style="margin-left: 0.5rem; background: #10b981; color: #000; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;">CHAMPION</span>
+                        {% endif %}
+                    </td>
+                    <td style="color: #34d399; font-weight: 700;">{{ m.accuracy }}</td>
+                    <td>{{ m.precision }}</td>
+                    <td>{{ m.recall }}</td>
+                    <td>{{ m.f1 }}</td>
+                    <td>
+                        <span class="status-badge {% if 'Active' in m.status %}badge-success{% else %}badge-warning{% endif %}">
+                            {{ m.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Evaluation Artifacts -->
+<div class="card">
+    <h2 class="card-title">
+        <span>📊</span>
+        <span>Champion Model Visualizations (Random Forest & Ensembles)</span>
+    </h2>
+    <p class="card-desc">Confusion matrices and feature importance breakdowns validating zero bias.</p>
+
+    <div class="gallery-grid">
+        <div class="plot-card">
+            <img src="{{ url_for('static', filename='images/confusion_matrix.png') }}" alt="Confusion Matrix">
+            <div class="plot-title">Random Forest Confusion Matrix</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Multi-class evaluation demonstrating near-zero classification confusion.</p>
+        </div>
+        <div class="plot-card">
+            <img src="{{ url_for('static', filename='images/feature_importance.png') }}" alt="Feature Importance">
+            <div class="plot-title">Random Forest Feature Importance</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Impact weight of Temperature, CO₂, Humidity, Light, and Fruit.</p>
+        </div>
+        <div class="plot-card">
+            <img src="{{ url_for('static', filename='images/ensemble_model_comparison.png') }}" alt="Ensemble Comparison">
+            <div class="plot-title">Ensemble Model Comparison</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Hard Voting vs Soft Voting vs Stacking Classifier performance.</p>
+        </div>
+        <div class="plot-card">
+            <img src="{{ url_for('static', filename='images/stacking_confusion_matrix.png') }}" alt="Stacking Matrix">
+            <div class="plot-title">Stacking Ensemble Confusion Matrix</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Two-layer meta-estimator predictions across all degradation classes.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+FRESHCHAIN PREPROCESSING SUMMARY
+======================================================================
+
+Rows : 8115
+Columns : 6
+Duplicate Rows Removed : 2880
+
+Columns
+Fruit
+Temp
+Humidity
+Light
+CO2
+Spoilage_Status
