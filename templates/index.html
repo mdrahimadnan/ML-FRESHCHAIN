@@ -6,7 +6,7 @@
 <div class="hero-header">
     <div class="hero-tag">
         <span>✨ Powered by Random Forest Classifier</span>
-        <span style="background: rgba(16, 185, 129, 0.3); padding: 0.1rem 0.5rem; border-radius: 9999px;">99.88% Accuracy</span>
+        <span style="background: #d1fae5; color: #065f46; font-weight: 700; padding: 0.15rem 0.55rem; border-radius: 9999px;">99.88% Accuracy</span>
     </div>
     <h1 class="hero-title">Predict Fruit Freshness & Spoilage</h1>
     <p class="hero-subtitle">Simulate real-time IoT cold storage sensors to predict fruit quality, prevent supply chain wastage, and assess shelf life deterioration.</p>
@@ -254,18 +254,18 @@
 
         if (res.prediction === 2) { // Fresh
             ring.style.borderColor = '#10b981';
-            ring.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.4)';
-            ring.style.background = 'rgba(16, 185, 129, 0.12)';
+            ring.style.boxShadow = '0 10px 25px rgba(16, 185, 129, 0.25)';
+            ring.style.background = '#ecfdf5';
             icon.innerText = '🍃';
         } else if (res.prediction === 1) { // At risk
             ring.style.borderColor = '#f59e0b';
-            ring.style.boxShadow = '0 0 30px rgba(245, 158, 11, 0.4)';
-            ring.style.background = 'rgba(245, 158, 11, 0.12)';
+            ring.style.boxShadow = '0 10px 25px rgba(245, 158, 11, 0.25)';
+            ring.style.background = '#fffbeb';
             icon.innerText = '⚠️';
         } else { // Spoiled
             ring.style.borderColor = '#ef4444';
-            ring.style.boxShadow = '0 0 30px rgba(239, 68, 68, 0.4)';
-            ring.style.background = 'rgba(239, 68, 68, 0.12)';
+            ring.style.boxShadow = '0 10px 25px rgba(239, 68, 68, 0.25)';
+            ring.style.background = '#fef2f2';
             icon.innerText = '☣️';
         }
 
